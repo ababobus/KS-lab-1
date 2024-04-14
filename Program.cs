@@ -9,19 +9,16 @@ class Program
     {
         while (true)
         {
-            Console.WriteLine("Введите начальный IP");
             string beginIP = Console.ReadLine();
-
-            Console.WriteLine("Введите конечный IP");
             string endIP = Console.ReadLine();
 
             IPAddress beginIPAddress = IPAddress.Parse(beginIP);
             IPAddress endIPAddress = IPAddress.Parse(endIP);
 
-            IPAddress subnetMask = CalculateSubnetMask(beginIPAddress, endIPAddress);
-            IPAddress networkAddress = CalculateNetworkAddress(beginIPAddress, subnetMask);
-            IPAddress broadcastAddress = CalculateBroadcastAddress(networkAddress, subnetMask);
-            string macAddress = GetMacAddress(':');
+            IPAddress subnetMask = Mask(beginIPAddress, endIPAddress);
+            IPAddress networkAddress = NetworkAddress(beginIPAddress, subnetMask);
+            IPAddress broadcastAddress = BroadcastAddress(networkAddress, subnetMask);
+            string macAddress = MacAddress(':');
 
             Console.WriteLine($"Маска сети: {subnetMask.ToString()}");
             Console.WriteLine($"Сетевой адрес: {networkAddress.ToString()}");
@@ -32,7 +29,7 @@ class Program
     }
 
 
-    static IPAddress CalculateSubnetMask(IPAddress beginIP, IPAddress endIP)
+    static IPAddress Mask(IPAddress beginIP, IPAddress endIP)
     {
         var begin = beginIP.GetAddressBytes();
         var end = endIP.GetAddressBytes();
@@ -57,17 +54,12 @@ class Program
     }
 
 
-    static IPAddress CalculateNetworkAddress(IPAddress ip, IPAddress subnetMask)
+    static IPAddress NetworkAddress(IPAddress ip, IPAddress subnetMask)
     {
         byte[] ipBytes = ip.GetAddressBytes();
         byte[] maskBytes = subnetMask.GetAddressBytes();
-
-        if (ipBytes.Length != maskBytes.Length)
-        {
-            throw new ArgumentException("Длины IP-адреса и маски подсети должны быть одинаковыми.");
-        }
-
         byte[] networkBytes = new byte[ipBytes.Length];
+
         for (int i = 0; i < ipBytes.Length; i++)
         {
             networkBytes[i] = (byte)(ipBytes[i] & maskBytes[i]);
@@ -77,17 +69,13 @@ class Program
     }
 
 
-    static IPAddress CalculateBroadcastAddress(IPAddress networkAddress, IPAddress subnetMask)
+    static IPAddress BroadcastAddress(IPAddress networkAddress, IPAddress subnetMask)
     {
-        byte[] networkBytes = networkAddress.GetAddressBytes();
+
         byte[] maskBytes = subnetMask.GetAddressBytes();
-
-        if (networkBytes.Length != maskBytes.Length)
-        {
-            throw new ArgumentException("Длины сетевого адреса и маски подсети должны быть одинаковыми.");
-        }
-
+        byte[] networkBytes = networkAddress.GetAddressBytes();
         byte[] broadcastBytes = new byte[networkBytes.Length];
+
         for (int i = 0; i < networkBytes.Length; i++)
         {
             broadcastBytes[i] = (byte)(networkBytes[i] | ~maskBytes[i]);
@@ -96,7 +84,7 @@ class Program
     }
 
 
-    static string GetMacAddress(char separator)
+    static string MacAddress(char separator)
     {
         string macAddress = "";
         foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
