@@ -20,10 +20,10 @@ class Program
             IPAddress broadcastAddress = BroadcastAddress(networkAddress, subnetMask);
             string macAddress = MacAddress(':');
 
-            Console.WriteLine($"Маска сети: {subnetMask.ToString()}");
-            Console.WriteLine($"Сетевой адрес: {networkAddress.ToString()}");
-            Console.WriteLine($"Broadcast адрес: {broadcastAddress.ToString()}");
-            Console.WriteLine("Mac-адрес: " + macAddress + "\n");
+            Console.WriteLine($"маска подсети: {subnetMask.ToString()}");
+            Console.WriteLine($"адрес сети: {networkAddress.ToString()}");
+            Console.WriteLine($"broadcast-адрес: {broadcastAddress.ToString()}");
+            Console.WriteLine("MAC-адрес: " + macAddress + "\n");
 
         }
     }
